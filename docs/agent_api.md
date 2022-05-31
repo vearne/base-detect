@@ -33,11 +33,11 @@ POST
 | 500      | A002        | 内部错误      || 
 | 200      | A003        | 检测目标时，建立连接失败或访问超时      || 
 #### body
-| 名称      |位置|参数类型| 说明         | 备注               |
-|:--------|:---|:---|:---|:-----------------|
-| data.httpCode |body|int| http结果 | -1 表示未能获得结果      |
-| data.timeCost |body|float64| 耗时 单位:秒|  -1 表示未能获得结果 |
-| data.dataSize |body|float64| 数据大小 单位:KB |    -1 表示未能获得结果        |
+| 名称      |位置| 参数类型    | 说明           | 备注               |
+|:--------|:---|:--------|:-------------|:-----------------|
+| data.httpCode |body| int     | http结果       | -1 表示未能获得结果      |
+| data.timeCost |body| float64 | 耗时 单位:秒      |  -1 表示未能获得结果 |
+| data.dataSize |body| int     | 数据大小 单位:byte |    -1 表示未能获得结果        |
 
 ```
 {
@@ -48,7 +48,7 @@ POST
 	"data": {
 		"httpCode": 200,
 		"timeCost": 2.5,
-		"dataSize": 25.5
+		"dataSize": 2000
 	}
 }
 ```

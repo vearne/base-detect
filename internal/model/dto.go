@@ -8,5 +8,5 @@ type RespStatus struct {
 type HttpDetectResult struct {
 	HttpCode int     `json:"httpCode"`
 	TimeCost float64 `json:"timeCost"`
-	DataSize float64 `json:"dataSize"`
+	DataSize int     `json:"dataSize"`
 }
