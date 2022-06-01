@@ -10,5 +10,5 @@ LDFLAGS = -ldflags "-s -w -X ${IMPORT_PATH}/consts.GitTag=${GITTAG} -X ${IMPORT_
 
 .PHONY: build
 build:
-	#GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o detect
-	go build $(LDFLAGS) -o detect
+	GOOS=linux GOARCH=amd64 go build $(LDFLAGS) -o detect
+	#go build $(LDFLAGS) -o detect

@@ -23,3 +23,4 @@ server
 ```
 wrk -t4 -c200 -d30s --script=./script/post.lua --latency http://127.0.0.1:19290/api/v1/httpdetect
 ```
+
