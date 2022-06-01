@@ -9,6 +9,7 @@ import (
 	"github.com/vearne/base-detect/internal/config"
 	"github.com/vearne/base-detect/internal/service"
 	"log"
+	_ "net/http/pprof"
 )
 
 // agentCmd represents the agent command

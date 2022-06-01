@@ -5,19 +5,28 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req/v3"
+	"github.com/panjf2000/ants/v2"
 	"github.com/vearne/base-detect/internal/config"
 	"github.com/vearne/base-detect/internal/consts"
 	"github.com/vearne/base-detect/internal/model"
-	"golang.org/x/sync/errgroup"
 	"log"
 	"net/http"
+	"sync"
 	"time"
+)
+
+var (
+	pool *ants.Pool
 )
 
 func StartServer() {
 	r := gin.Default()
 	r.POST("/api/v1/httpdetect", ServerHttpDetect)
 	r.Run(config.GetServerConfig().Addr)
+}
+
+func init() {
+	pool, _ = ants.NewPool(50)
 }
 
 func ServerHttpDetect(c *gin.Context) {
@@ -32,43 +41,19 @@ func ServerHttpDetect(c *gin.Context) {
 	}
 
 	//ctx := context.Background()
-	var g errgroup.Group
+	var wg sync.WaitGroup
 
 	agents := config.GetServerConfig().AgentAddrs
 	resChn := make(chan model.AgentHttpDetectResult, len(agents))
 	for _, addr := range agents {
 		agentAddr := addr
-		g.Go(func() error {
-			var item model.AgentHttpDetectResult
-			item.Agent = agentAddr
-			item.AgentOk = true
-			item.TargetOk = true
-
-			url := fmt.Sprintf("http://%v/api/v1/httpdetect", agentAddr)
-			log.Println("url", url)
-
-			ctx, cancel := context.WithTimeout(context.Background(),
-				time.Second*time.Duration(param.Timeout)+time.Millisecond*100)
-			defer cancel()
-			resp, err := req.SetBody(&param).SetContext(ctx).Post(url)
-			if err != nil {
-				log.Println("err", err)
-				item.AgentOk = false
-			} else {
-				dresp := model.AgentHttpDetectResp{}
-				resp.Unmarshal(&dresp)
-				if dresp.Status.Code == consts.AgentECodeTargetError {
-					item.TargetOk = false
-				} else {
-					item.Result = dresp.Data
-				}
-			}
-
-			resChn <- item
-			return nil
+		wg.Add(1)
+		pool.Submit(func() {
+			executeHttpDetect(agentAddr, &param, resChn)
+			wg.Done()
 		})
 	}
-	g.Wait()
+	wg.Wait()
 	close(resChn)
 
 	result.Status.Code = consts.ServerECodeSuccess
@@ -88,4 +73,32 @@ func ServerHttpDetect(c *gin.Context) {
 		result.Status.Code = consts.ServerECodeAgentError
 	}
 	c.JSON(http.StatusOK, &result)
+}
+
+func executeHttpDetect(agentAddr string, param *model.ServerHttpDetectReq, resChn chan model.AgentHttpDetectResult) {
+	var item model.AgentHttpDetectResult
+	item.Agent = agentAddr
+	item.AgentOk = true
+	item.TargetOk = true
+
+	url := fmt.Sprintf("http://%v/api/v1/httpdetect", agentAddr)
+	log.Println("url", url)
+
+	ctx, cancel := context.WithTimeout(context.Background(),
+		time.Second*time.Duration(param.Timeout)+time.Millisecond*100)
+	defer cancel()
+	resp, err := req.SetBody(&param).SetContext(ctx).Post(url)
+	if err != nil {
+		log.Println("err", err)
+		item.AgentOk = false
+	} else {
+		dresp := model.AgentHttpDetectResp{}
+		resp.Unmarshal(&dresp)
+		if dresp.Status.Code == consts.AgentECodeTargetError {
+			item.TargetOk = false
+		} else {
+			item.Result = dresp.Data
+		}
+	}
+	resChn <- item
 }
