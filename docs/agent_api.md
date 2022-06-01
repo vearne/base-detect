@@ -35,10 +35,11 @@ POST
 #### body
 | 名称      |位置| 参数类型    | 说明           | 备注               |
 |:--------|:---|:--------|:-------------|:-----------------|
-| data.httpCode |body| int     | http结果       | -1 表示未能获得结果      |
-| data.timeCost |body| float64 | 耗时 单位:秒      |  -1 表示未能获得结果 |
-| data.dataSize |body| int     | 数据大小 单位:byte |    -1 表示未能获得结果        |
+| data.httpCode |body| int     | http结果       |   |
+| data.timeCost |body| float64 | 耗时 单位:秒      |  |
+| data.dataSize |body| int     | 数据大小 单位:byte |     |
 
+**注意**: 如果检测失败data 为null
 ```
 {
 	"status": {

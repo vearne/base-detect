@@ -6,6 +6,6 @@ type AgentHttpDetectReq struct {
 }
 
 type AgentHttpDetectResp struct {
-	Status RespStatus       `json:"status"`
-	Data   HttpDetectResult `json:"data"`
+	Status RespStatus        `json:"status"`
+	Data   *HttpDetectResult `json:"data"`
 }

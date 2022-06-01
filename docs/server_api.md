@@ -9,7 +9,7 @@ POST
 
 #### path
 
-/api/v1/httpdetect  
+/api/v1/httpdetect
 
 #### params
 
@@ -27,33 +27,38 @@ POST
 ```
 
 ### Response
-| HttpCode | status.code | 说明        |备注|
-|:---------|:------------|:----------|:---|
-| 200      | E000        | 成功执行      || 
-| 400      | E001        | 参数错误      || 
-| 500      | E002        | 内部错误      || 
-| 503      | E003        | 有agent不可用 || 
+| HttpCode | status.code | 说明         |备注|
+|:---------|:------------|:-----------|:---|
+| 200      | E000        | 成功执行       || 
+| 400      | E001        | 参数错误       || 
+| 500      | E002        | 内部错误       || 
+| 200      | E003        | 部分agent不可用 || 
 #### body
-| 名称      |位置| 参数类型    | 说明         | 备注               |
-|:--------|:---|:--------|:---|:-----------------|
+| 名称      |位置| 参数类型    | 说明         | 备注         |
+|:--------|:---|:--------|:---|:-----------|
 | list.agent  |body| string  | agent地址 ||
-| list.result.httpCode |body| int     | http结果 | -1 表示未能获得结果      |
-| list.result.timeCost |body| float64 | 耗时 | 单位:秒 -1 表示未能获得结果 |
-| list.result.dataSize |body| int     | 数据大小 | 单位:KB    -1 表示未能获得结果        |
+| list.agentOk  |body| bool  | agent是否正常 ||
+| list.targetOk  |body| bool  |target是否正常 ||
+| list.result.httpCode |body| int     | http结果 ||
+| list.result.timeCost |body| float64 | 耗时 ||
+| list.result.dataSize |body| int     | 数据大小 ||
 
 ```
 {
 	"status": {
 		"code": "E000",
-		"msg": "success"
+		"msg": ""
 	},
 	"list": [{
-		"agent": "192.168.20.100:7983",
-		"result": {
-			"httpCode": 200,
-			"timeCost": 2.5,
-			"dataSize": 25500
+			"agent": "127.0.0.1:19291",
+			"agentOk": true,
+			"targetOk": true,
+			"result": {
+				"httpCode": 200,
+				"timeCost": 0.137397334,
+				"dataSize": 80545
+			}
 		}
-	}]
+	]
 }
 ```

@@ -12,38 +12,36 @@ import (
 
 func StartAgent() {
 	r := gin.Default()
-	r.POST("/api/v1/httpdetect", func(c *gin.Context) {
-
-		result := model.AgentHttpDetectResp{}
-		result.Data.DataSize = -1
-		result.Data.HttpCode = -1
-		result.Data.TimeCost = -1
-
-		var param model.AgentHttpDetectReq
-		err := c.BindJSON(&param)
-		if err != nil {
-			result.Status = model.RespStatus{Code: consts.AgentECodeParamError}
-			c.JSON(http.StatusBadRequest, &result)
-			return
-		}
-
-		client := req.C().EnableTraceAll()
-		client.SetTimeout(time.Second * time.Duration(param.Timeout))
-		resp, err := client.R().Get(param.Target)
-		if err != nil {
-			result.Status = model.RespStatus{Code: consts.AgentECodeTargetError, Message: err.Error()}
-			c.JSON(http.StatusOK, &result)
-			return
-		}
-
-		result.Status.Code = consts.AgentECodeSuccess
-		result.Data.HttpCode = resp.StatusCode
-		//fmt.Println(resp.TraceInfo().String())
-		result.Data.TimeCost = resp.TraceInfo().TotalTime.Seconds()
-		bt, _ := resp.ToBytes()
-		result.Data.DataSize = len(bt)
-
-		c.JSON(http.StatusOK, &result)
-	})
+	r.POST("/api/v1/httpdetect", AgentHttpDetect)
 	r.Run(config.GetAgentConfig().Addr)
+}
+
+func AgentHttpDetect(c *gin.Context) {
+
+	result := model.AgentHttpDetectResp{}
+	var param model.AgentHttpDetectReq
+	err := c.BindJSON(&param)
+	if err != nil {
+		result.Status = model.RespStatus{Code: consts.AgentECodeParamError}
+		c.JSON(http.StatusBadRequest, &result)
+		return
+	}
+
+	client := req.C().EnableTraceAll()
+	client.SetTimeout(time.Second * time.Duration(param.Timeout))
+	resp, err := client.R().Get(param.Target)
+	if err != nil {
+		result.Status = model.RespStatus{Code: consts.AgentECodeTargetError, Message: err.Error()}
+		c.JSON(http.StatusOK, &result)
+		return
+	}
+
+	result.Status.Code = consts.AgentECodeSuccess
+	result.Data = &model.HttpDetectResult{}
+	result.Data.HttpCode = resp.StatusCode
+	result.Data.TimeCost = resp.TraceInfo().TotalTime.Seconds()
+	bt, _ := resp.ToBytes()
+	result.Data.DataSize = len(bt)
+
+	c.JSON(http.StatusOK, &result)
 }

@@ -7,6 +7,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	"github.com/vearne/base-detect/internal/config"
+	"github.com/vearne/base-detect/internal/service"
 	"log"
 )
 
@@ -20,7 +21,7 @@ var serverCmd = &cobra.Command{
 		agentAddrs := config.GetServerConfig().AgentAddrs
 		log.Println("addr", addr)
 		log.Println("agentAddrs", agentAddrs)
-
+		service.StartServer()
 	},
 }
 

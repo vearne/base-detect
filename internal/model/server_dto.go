@@ -1,13 +1,15 @@
 package model
 
 type ServerHttpDetectReq struct {
-	Target  string `json:"target"`
-	Timeout int    `json:"timeout"`
+	Target  string  `json:"target"`
+	Timeout float64 `json:"timeout"`
 }
 
 type AgentHttpDetectResult struct {
-	Agent  string           `json:"agent"`
-	Result HttpDetectResult `json:"result"`
+	Agent    string            `json:"agent"`
+	AgentOk  bool              `json:"agentOk"`
+	TargetOk bool              `json:"targetOk"`
+	Result   *HttpDetectResult `json:"result"`
 }
 
 type ServerHttpDetectResp struct {
