@@ -8,20 +8,27 @@ import (
 	"fmt"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/vearne/base-detect/internal/consts"
 	"os"
 )
 
 var (
 	// Used for flags.
-	cfgFile string
+	cfgFile     string
+	versionFlag bool
 )
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use: "base-detect",
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
+	Run: func(cmd *cobra.Command, args []string) {
+		if versionFlag {
+			fmt.Println("service: chat")
+			fmt.Println("Version", consts.Version)
+			fmt.Println("BuildTime", consts.BuildTime)
+			fmt.Println("GitTag", consts.GitTag)
+		}
+	},
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
@@ -43,6 +50,7 @@ func init() {
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	rootCmd.PersistentFlags().BoolVarP(&versionFlag, "version", "v", false, "Show version")
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra.yaml)")
 }
 
