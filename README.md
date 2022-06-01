@@ -1,11 +1,21 @@
 # base-detect
 基调服务
 
+## build
+```
+make build
+```
+
 ## 启动agent
 ```
 go run main.go agent --config=./configs/agent1.yaml
 go run main.go agent --config=./configs/agent2.yaml
 go run main.go agent --config=./configs/agent3.yaml
+```
+```
+./detect agent --config=./configs/agent1.yaml
+./detect agent --config=./configs/agent2.yaml
+./detect agent --config=./configs/agent3.yaml
 ```
 
 
@@ -13,7 +23,9 @@ go run main.go agent --config=./configs/agent3.yaml
 ```
 go run main.go server --config=./configs/config.server.yaml
 ```
-
+```
+./detect server --config=./configs/agent1.yaml
+```
 ## 压测
 agent
 ```
