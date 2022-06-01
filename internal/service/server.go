@@ -33,7 +33,6 @@ func ServerHttpDetect(c *gin.Context) {
 
 	//ctx := context.Background()
 	var g errgroup.Group
-	//var
 
 	agents := config.GetServerConfig().AgentAddrs
 	resChn := make(chan model.AgentHttpDetectResult, len(agents))
@@ -45,15 +44,13 @@ func ServerHttpDetect(c *gin.Context) {
 			item.AgentOk = true
 			item.TargetOk = true
 
-			//client := req.C().EnableDumpAllWithoutResponse()
-			client := req.C()
 			url := fmt.Sprintf("http://%v/api/v1/httpdetect", agentAddr)
 			log.Println("url", url)
 
 			ctx, cancel := context.WithTimeout(context.Background(),
 				time.Second*time.Duration(param.Timeout)+time.Millisecond*100)
 			defer cancel()
-			resp, err := client.R().SetBody(&param).SetContext(ctx).Post(url)
+			resp, err := req.SetBody(&param).SetContext(ctx).Post(url)
 			if err != nil {
 				log.Println("err", err)
 				item.AgentOk = false

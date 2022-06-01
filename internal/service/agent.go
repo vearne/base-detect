@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/imroc/req/v3"
 	"github.com/vearne/base-detect/internal/config"
@@ -27,9 +28,10 @@ func AgentHttpDetect(c *gin.Context) {
 		return
 	}
 
-	client := req.C().EnableTraceAll()
-	client.SetTimeout(time.Second * time.Duration(param.Timeout))
-	resp, err := client.R().Get(param.Target)
+	ctx, cancel := context.WithTimeout(context.Background(),
+		time.Second*time.Duration(param.Timeout))
+	defer cancel()
+	resp, err := req.R().SetContext(ctx).Get(param.Target)
 	if err != nil {
 		result.Status = model.RespStatus{Code: consts.AgentECodeTargetError, Message: err.Error()}
 		c.JSON(http.StatusOK, &result)

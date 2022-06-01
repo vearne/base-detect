@@ -24,15 +24,15 @@ go run main.go agent --config=./configs/agent3.yaml
 go run main.go server --config=./configs/config.server.yaml
 ```
 ```
-./detect server --config=./configs/agent1.yaml
+./detect server --config=./configs/config.server.yaml
 ```
 ## 压测
 agent
 ```
-wrk -t4 -c200 -d30s --script=./script/post.lua --latency http://127.0.0.1:19291/api/v1/httpdetect
+wrk -t4 -c100 -d30s --script=./script/post.lua --latency http://127.0.0.1:19291/api/v1/httpdetect
 ```
 server
 ```
-wrk -t4 -c200 -d30s --script=./script/post.lua --latency http://127.0.0.1:19290/api/v1/httpdetect
+wrk -t4 -c100 -d30s --script=./script/post.lua --latency http://127.0.0.1:19290/api/v1/httpdetect
 ```
 
