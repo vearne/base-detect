@@ -1,0 +1,133 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "api/detect/agent/v1/agent.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "Agent"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/v1/httpdetect": {
+      "post": {
+        "operationId": "Agent_httpdetect",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1httpdetectResp"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1httpdetectReq"
+            }
+          }
+        ],
+        "tags": [
+          "Agent"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1CodeEnum": {
+      "type": "string",
+      "enum": [
+        "C000",
+        "C001",
+        "C002",
+        "C003",
+        "C004"
+      ],
+      "default": "C000"
+    },
+    "v1httpdetectReq": {
+      "type": "object",
+      "properties": {
+        "traceId": {
+          "type": "string"
+        },
+        "spanId": {
+          "type": "string"
+        },
+        "target": {
+          "type": "string"
+        },
+        "timeout": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "v1httpdetectResp": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "$ref": "#/definitions/v1CodeEnum"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "httpCode": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "timeCost": {
+          "type": "number",
+          "format": "double"
+        },
+        "dataSize": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    }
+  }
+}

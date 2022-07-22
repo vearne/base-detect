@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 	"github.com/gin-gonic/gin"
-	"github.com/imroc/req/v3"
+	"github.com/go-resty/resty/v2"
 	"github.com/vearne/base-detect/internal/config"
 	"github.com/vearne/base-detect/internal/consts"
 	"github.com/vearne/base-detect/internal/model"
@@ -31,7 +31,13 @@ func AgentHttpDetect(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(),
 		time.Second*time.Duration(param.Timeout))
 	defer cancel()
-	resp, err := req.R().SetContext(ctx).Get(param.Target)
+
+	client := resty.New()
+	resp, err := client.R().
+		EnableTrace().
+		SetContext(ctx).
+		Get(param.Target)
+
 	if err != nil {
 		result.Status = model.RespStatus{Code: consts.AgentECodeTargetError, Message: err.Error()}
 		c.JSON(http.StatusOK, &result)
@@ -40,10 +46,18 @@ func AgentHttpDetect(c *gin.Context) {
 
 	result.Status.Code = consts.AgentECodeSuccess
 	result.Data = &model.HttpDetectResult{}
-	result.Data.HttpCode = resp.StatusCode
-	result.Data.TimeCost = resp.TraceInfo().TotalTime.Seconds()
-	bt, _ := resp.ToBytes()
-	result.Data.DataSize = len(bt)
+	result.Data.HttpCode = resp.StatusCode()
+	result.Data.DataSize = len(resp.Body())
+
+	info := resp.Request.TraceInfo()
+	result.Data.DNSLookup = info.DNSLookup
+	result.Data.ConnTime = info.ConnTime
+	result.Data.TCPConnTime = info.TCPConnTime
+	result.Data.TLSHandshake = info.TLSHandshake
+	result.Data.ServerTime = info.ServerTime
+	result.Data.ResponseTime = info.ResponseTime
+	result.Data.TotalTime = info.TotalTime
+	result.Data.RemoteAddr = info.RemoteAddr.String()
 
 	c.JSON(http.StatusOK, &result)
 }
